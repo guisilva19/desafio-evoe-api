@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Patch,
   Post,
@@ -16,16 +16,15 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserDTO, UserUpdateDTO, UserUpdatePassDTO } from './user.dto';
 
 @ApiTags('Usuarios')
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Get()
-  async findMyUser(@Req() req) {
-    const { id } = req.user;
-    return await this.userService.findMyUser(id);
+  @Get('me')
+  async getProfile(@Req() req) {
+    return await this.userService.findMyUser(req.user.id);
   }
 
   @Post()
@@ -35,17 +34,22 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Patch('update')
-  async updateMyUser(@Body() body: UserUpdateDTO, @Req() req) {
-    const { id } = req.user;
-    return await this.userService.updateMyUser(body, id);
+  @Patch('me')
+  async updateProfile(@Body() body: UserUpdateDTO, @Req() req) {
+    return await this.userService.updateMyUser(body, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Patch('update-pass')
-  async updateMyPass(@Body() body: UserUpdatePassDTO, @Req() req) {
-    const { id } = req.user;
-    return await this.userService.updateMyPass(body, id);
+  @Patch('me/credentials')
+  async updatePassword(@Body() body: UserUpdatePassDTO, @Req() req) {
+    return await this.userService.updateMyPass(body, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Delete('me')
+  async deleteProfile(@Req() req) {
+    return await this.userService.delete(req.user.id);
   }
 }

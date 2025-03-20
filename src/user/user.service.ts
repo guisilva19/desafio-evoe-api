@@ -128,4 +128,16 @@ export class UserService {
       throw new BadRequestException('Sua senha está incorreta');
     }
   }
+
+  async delete(id: string) {
+    await this.db.user.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      message: 'O usuário foi removido com sucesso!',
+    };
+  }
 }
