@@ -130,6 +130,8 @@ export class UserService {
   }
 
   async delete(id: string) {
+    await this.findMyUser(id);
+
     await this.db.user.delete({
       where: {
         id: id,
