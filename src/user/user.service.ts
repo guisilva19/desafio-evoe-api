@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { UserDTO, UserUpdateDTO, UserUpdatePassDTO } from './user.dto';
@@ -136,6 +137,67 @@ export class UserService {
       where: {
         id: id,
       },
+    });
+
+    return {
+      message: 'O usuário foi removido com sucesso!',
+    };
+  }
+
+  async validateUserAdmin(id: string) {
+    const user = await this.db.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user?.isAdmin) {
+      throw new UnauthorizedException('Você não tem permissão.');
+    }
+  }
+
+  async listSupportersUsers(userId: string) {
+    await this.validateUserAdmin(userId);
+
+    return await this.db.user.findMany({
+      where: {
+        isAdmin: false,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isAdmin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async updateUserById(id: string, userId: string, body: UserUpdateDTO) {
+    await this.validateUserAdmin(userId);
+
+    return await this.db.user.update({
+      where: { id },
+      data: {
+        ...body,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isAdmin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async deleteUserById(id: string, userId: string) {
+    await this.validateUserAdmin(userId);
+
+    await this.db.user.delete({
+      where: { id },
     });
 
     return {
