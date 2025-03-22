@@ -1,24 +1,19 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UserDTO, UserUpdateDTO, UserUpdatePassDTO } from './user.dto';
+import { UserDTO } from './user.dto';
 
-@ApiTags('Perfil')
+@ApiTags('Usuarios')
 @Controller('users/me')
-export class UserProfileController {
+export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @ApiOperation({ summary: 'Criar usuário' })
+  @Post()
+  async register(@Body() body: UserDTO) {
+    return await this.userService.register(body);
+  }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
@@ -26,69 +21,5 @@ export class UserProfileController {
   @Get()
   async getProfile(@Req() req) {
     return await this.userService.findMyUser(req.user.id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Atualizar meu perfil' })
-  @Patch()
-  async updateProfile(@Body() body: UserUpdateDTO, @Req() req) {
-    return await this.userService.updateMyUser(body, req.user.id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Alterar minha senha' })
-  @Patch('credentials')
-  async updatePassword(@Body() body: UserUpdatePassDTO, @Req() req) {
-    return await this.userService.updateMyPass(body, req.user.id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Excluir meu perfil' })
-  @Delete()
-  async deleteProfile(@Req() req) {
-    return await this.userService.delete(req.user.id);
-  }
-}
-
-@ApiTags('Usuários')
-@Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @ApiOperation({ summary: 'Criar novo usuário' })
-  @Post()
-  async createUser(@Body() user: UserDTO) {
-    return await this.userService.register(user);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Listar usuários apoiadores' })
-  @Get()
-  async listSupportersUsers(@Req() req, @Query('page') page: number = 1) {
-    return await this.userService.listSupportersUsers(req.user.id, page);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Atualizar um usuário pelo ID' })
-  @Patch(':id')
-  async updateUser(
-    @Param('id') id: string,
-    @Body() body: UserUpdateDTO,
-    @Req() req,
-  ) {
-    return await this.userService.updateUserById(id, req.user.id, body);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Excluir um usuário pelo ID' })
-  @Delete()
-  async deleteUser(@Body() body: string[], @Req() req) {
-    return await this.userService.deleteUserById(body, req.user.id);
   }
 }

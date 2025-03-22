@@ -13,7 +13,7 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email ou senha inválidos.');
     }
 
     const comparePasswordHashed = bcrypt.compareSync(pass, user.senha);

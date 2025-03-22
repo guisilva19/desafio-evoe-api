@@ -8,13 +8,21 @@ datasource db {
 }
 
 model user {
+  id    String @id @default(uuid())
+  nome  String
+  email String @unique
+  senha String
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+}
+
+model supporter {
   id            String  @id @default(uuid())
   nome          String
   email         String  @unique
-  senha         String
   telefone      String
   link          String
-  administrador Boolean @default(false)
 
   criado_em     DateTime @default(now())
   atualizado_em DateTime @updatedAt
