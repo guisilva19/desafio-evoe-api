@@ -7,7 +7,7 @@ export class UserDTO {
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  nome: string;
 
   @ApiProperty({
     example: 'string',
@@ -21,8 +21,20 @@ export class UserDTO {
     example: 'string',
   })
   @IsString()
+  link: string;
+
+  @ApiProperty({
+    example: 'string',
+  })
+  @IsString()
+  telefone: string;
+
+  @ApiProperty({
+    example: 'string',
+  })
+  @IsString()
   @IsNotEmpty()
-  password: string;
+  senha: string;
 }
 
 export class UserUpdateDTO {
@@ -31,7 +43,21 @@ export class UserUpdateDTO {
   })
   @IsString()
   @IsOptional()
-  name: string;
+  nome: string;
+
+  @ApiProperty({
+    example: 'string',
+  })
+  @IsString()
+  @IsOptional()
+  telefone: string;
+
+  @ApiProperty({
+    example: 'string',
+  })
+  @IsString()
+  @IsOptional()
+  link: string;
 }
 
 export class UserUpdatePassDTO {
@@ -40,12 +66,12 @@ export class UserUpdatePassDTO {
   })
   @IsString()
   @IsNotEmpty()
-  old_password: string;
+  senha_antiga: string;
 
   @ApiProperty({
     example: 'string',
   })
   @IsString()
   @IsNotEmpty()
-  new_password: string;
+  nova_senha: string;
 }

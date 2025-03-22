@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -67,8 +68,8 @@ export class UserController {
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Listar usuários apoiadores' })
   @Get()
-  async listSupportersUsers(@Req() req) {
-    return await this.userService.listSupportersUsers(req.user.id);
+  async listSupportersUsers(@Req() req, @Query('page') page: number = 1) {
+    return await this.userService.listSupportersUsers(req.user.id, page);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -86,8 +87,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Excluir um usuário pelo ID' })
-  @Delete(':id')
-  async deleteUser(@Param('id') id: string, @Req() req) {
-    return await this.userService.deleteUserById(id, req.user.id);
+  @Delete()
+  async deleteUser(@Body() body: string[], @Req() req) {
+    return await this.userService.deleteUserById(body, req.user.id);
   }
 }

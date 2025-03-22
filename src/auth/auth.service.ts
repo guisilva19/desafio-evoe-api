@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
@@ -19,10 +16,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const comparePasswordHashed = bcrypt.compareSync(pass, user.password);
+    const comparePasswordHashed = bcrypt.compareSync(pass, user.senha);
 
     if (user && comparePasswordHashed) {
-      const { password, ...userWithoutPassword } = user;
+      const { senha, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } else {
       throw new UnauthorizedException();

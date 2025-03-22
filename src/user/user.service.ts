@@ -26,14 +26,16 @@ export class UserService {
     const userCreated = await this.db.user.create({
       data: {
         ...user,
-        password: bcrypt.hashSync(user.password, 10),
+        senha: bcrypt.hashSync(user.senha, 10),
       },
       select: {
         id: true,
         email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
+        nome: true,
+        telefone: true,
+        link: true,
+        criado_em: true,
+        atualizado_em: true,
       },
     });
 
@@ -48,10 +50,13 @@ export class UserService {
       select: {
         id: true,
         email: true,
-        name: true,
-        password: true,
-        createdAt: true,
-        updatedAt: true,
+        nome: true,
+        senha: true,
+        administrador: true,
+        link: true,
+        telefone: true,
+        atualizado_em: true,
+        criado_em: true,
       },
     });
   }
@@ -62,9 +67,12 @@ export class UserService {
       select: {
         id: true,
         email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
+        nome: true,
+        administrador: true,
+        link: true,
+        telefone: true,
+        atualizado_em: true,
+        criado_em: true,
       },
     });
 
@@ -86,9 +94,12 @@ export class UserService {
       select: {
         id: true,
         email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true,
+        nome: true,
+        administrador: true,
+        link: true,
+        telefone: true,
+        atualizado_em: true,
+        criado_em: true,
       },
     });
   }
@@ -103,8 +114,8 @@ export class UserService {
     }
 
     const comparePasswordHashed = bcrypt.compareSync(
-      body.old_password,
-      user.password,
+      body.senha_antiga,
+      user.senha,
     );
 
     if (comparePasswordHashed) {
@@ -113,14 +124,17 @@ export class UserService {
           id,
         },
         data: {
-          password: bcrypt.hashSync(body.new_password, 10),
+          senha: bcrypt.hashSync(body.nova_senha, 10),
         },
         select: {
           id: true,
           email: true,
-          name: true,
-          createdAt: true,
-          updatedAt: true,
+          nome: true,
+          administrador: true,
+          link: true,
+          telefone: true,
+          atualizado_em: true,
+          criado_em: true,
         },
       });
 
@@ -151,27 +165,36 @@ export class UserService {
       },
     });
 
-    if (!user?.isAdmin) {
+    if (!user?.administrador) {
       throw new UnauthorizedException('Você não tem permissão.');
     }
   }
 
-  async listSupportersUsers(userId: string) {
+  async listSupportersUsers(userId: string, page: number) {
     await this.validateUserAdmin(userId);
 
-    return await this.db.user.findMany({
+    // Calculando o offset com base na página e limite
+    const skip = (page - 1) * 10;
+
+    const users = await this.db.user.findMany({
       where: {
-        isAdmin: false,
+        administrador: false,
       },
       select: {
         id: true,
         email: true,
-        name: true,
-        isAdmin: true,
-        createdAt: true,
-        updatedAt: true,
+        nome: true,
+        administrador: true,
+        link: true,
+        telefone: true,
+        atualizado_em: true,
+        criado_em: true,
       },
+      skip, // Offset para paginação
+      take: 10, // Número de usuários por página
     });
+
+    return users;
   }
 
   async updateUserById(id: string, userId: string, body: UserUpdateDTO) {
@@ -185,23 +208,29 @@ export class UserService {
       select: {
         id: true,
         email: true,
-        name: true,
-        isAdmin: true,
-        createdAt: true,
-        updatedAt: true,
+        nome: true,
+        administrador: true,
+        link: true,
+        telefone: true,
+        atualizado_em: true,
+        criado_em: true,
       },
     });
   }
 
-  async deleteUserById(id: string, userId: string) {
+  async deleteUserById(ids: string[], userId: string) {
     await this.validateUserAdmin(userId);
 
-    await this.db.user.delete({
-      where: { id },
+    await this.db.user.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
     });
 
     return {
-      message: 'O usuário foi removido com sucesso!',
+      message: 'Os usuários foram removidos com sucesso!',
     };
   }
 }
