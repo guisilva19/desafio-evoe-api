@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -93,67 +91,3 @@ export class UserController {
     return await this.userService.deleteUserById(id, req.user.id);
   }
 }
-
-// @ApiTags('Usuarios')
-// @Controller('users')
-// export class UserController {
-//   constructor(private readonly userService: UserService) {}
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Get('me')
-//   async getProfile(@Req() req) {
-//     return await this.userService.findMyUser(req.user.id);
-//   }
-
-//   @Post()
-//   async createUser(@Body() user: UserDTO) {
-//     return await this.userService.register(user);
-//   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Patch('me')
-//   async updateProfile(@Body() body: UserUpdateDTO, @Req() req) {
-//     return await this.userService.updateMyUser(body, req.user.id);
-//   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Patch('me/credentials')
-//   async updatePassword(@Body() body: UserUpdatePassDTO, @Req() req) {
-//     return await this.userService.updateMyPass(body, req.user.id);
-//   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Delete('me')
-//   async deleteProfile(@Req() req) {
-//     return await this.userService.delete(req.user.id);
-//   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Get()
-//   async listSupportersUsers(@Req() req) {
-//     return await this.userService.listSupportersUsers(req.user.id);
-//   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Patch(':id')
-//   async updateUser(
-//     @Param('id') id: string,
-//     @Body() body: UserUpdateDTO,
-//     @Req() req,
-//   ) {
-//     return await this.userService.updateUserById(id, req.user.id, body);
-//   }
-
-//   @UseGuards(JwtAuthGuard)
-//   @ApiBearerAuth('access-token')
-//   @Delete(':id')
-//   async deleteUser(@Param('id') id: string, @Req() req) {
-//     return await this.userService.deleteUserById(id, req.user.id);
-//   }
-// }
