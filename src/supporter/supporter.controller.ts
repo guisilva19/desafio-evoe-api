@@ -9,7 +9,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SupporterDTO, SupporterUpdateDTO } from './supporter.dto';
 import { SupporterService } from './supporter.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
@@ -30,9 +35,40 @@ export class SupporterController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Listar apoiadores' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Número da página (opcional, padrão 1)',
+  })
+  @ApiQuery({
+    name: 'nome',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'telefone',
+    required: false,
+    type: Number,
+  })
   @Get()
-  async listSupportersUsers(@Query('page') page: number = 1) {
-    return await this.supporterService.listSupporters(page);
+  async listSupportersUsers(
+    @Query('page') page: number = 1,
+    @Query('nome') nome: string = '',
+    @Query('email') email: string = '',
+    @Query('telefone') telefone: string = '',
+  ) {
+    return await this.supporterService.listSupporters(
+      page,
+      nome,
+      email,
+      telefone,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

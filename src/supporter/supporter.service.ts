@@ -35,11 +35,27 @@ export class SupporterService {
     return userCreated;
   }
 
-  async listSupporters(page: number) {
-    // Calculando o offset com base na página e limite
-    const skip = (page - 1) * 10;
+  async listSupporters(
+    page: number,
+    nome: string,
+    email: string,
+    telefone: string,
+  ) {
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
 
-    const users = await this.db.supporter.findMany({
+    const where: any = {};
+
+    if (nome) where.nome = { contains: nome, mode: 'insensitive' };
+    if (email) where.email = { contains: email, mode: 'insensitive' };
+    if (telefone) where.telefone = { contains: telefone, mode: 'insensitive' };
+
+    const total = await this.db.supporter.count({
+      where,
+    });
+
+    const supporters = await this.db.supporter.findMany({
+      where,
       select: {
         id: true,
         email: true,
@@ -49,11 +65,17 @@ export class SupporterService {
         atualizado_em: true,
         criado_em: true,
       },
-      skip, // Offset para paginação
-      take: 10, // Número de usuários por página
+      skip,
+      take: pageSize,
     });
 
-    return users;
+    return {
+      supporters,
+      total,
+      page: Number(page),
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async updateSupporterById(id: string, body: SupporterUpdateDTO) {
